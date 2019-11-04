@@ -25,7 +25,7 @@ jobs:
         C:\tools\msys64\usr\bin\bash -lc "./build.sh -b"
       shell: cmd
       env:
-        HOME: ${{ runner.workspace }}/github-actions-test
+        HOME: ${{ runner.workspace }}/ffmpeg_build
     - uses: actions/upload-artifact@master
       name: Upload Artifact
       with:
