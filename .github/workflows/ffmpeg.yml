@@ -39,6 +39,8 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: ffmpeg
+      - name: Zip
+        run: 7z a ffmpeg.zip ffmpeg/
       - name: Create Build Number
         id: buildnumber
         uses: einaregilsson/build-number@v1 
