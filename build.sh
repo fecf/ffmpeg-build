@@ -1,7 +1,5 @@
 echo $PATH
 cd FFmpeg
-ls
-ls /c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/
 pacman --sync --noconfirm --needed base-devel
 pacman --sync --noconfirm --needed p7zip
 
