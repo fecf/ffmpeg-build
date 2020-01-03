@@ -18,7 +18,7 @@ wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0-win64.exe -O /bin/
   --disable-doc \
   --disable-devices \
   --disable-protocols \
-  --disable-hwaccels
+  --disable-hwaccels \
   --enable-protocol=file \
   --enable-small \
   --enable-w32threads \
