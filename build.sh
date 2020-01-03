@@ -1,7 +1,4 @@
-VC_BIN_PATH="/c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/14.23.28105/bin/Hostx64/x64"
-export PATH=$VC_BIN_PATH:"/c/MinGW/msys/1.0/bin/":$PATH
-alias cl=$VC_BIN_PATH/cl.exe
-alias link=$VC_BIN_PATH/link.exe
+echo $PATH
 cd FFmpeg
 ls
 ls /c/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Tools/MSVC/
