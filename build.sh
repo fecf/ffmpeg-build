@@ -2,6 +2,7 @@ echo $PATH
 cd FFmpeg
 pacman --sync --noconfirm --needed base-devel
 pacman --sync --noconfirm --needed p7zip
+pacman --sync --noconfirm --needed zlib
 
 wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0-win64.exe -O /bin/yasm.exe
 
