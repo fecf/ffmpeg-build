@@ -19,6 +19,7 @@ wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0-win64.exe -O /bin/
   --enable-small \
   --enable-w32threads \
   --enable-x86asm \
+  
   --prefix=install \
   --toolchain=msvc
 
