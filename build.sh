@@ -25,6 +25,6 @@ wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0-win64.exe -O /bin/
 
 make
 make install
-rename lib "" install/lib/*.a
-rename .a .lib install/lib/*.a
+# rename lib "" install/lib/*.a
+# rename .a .lib install/lib/*.a
 
