@@ -39,4 +39,10 @@ wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0-win64.exe -O /bin/
 
 make
 make install
-mv install/bin/*.lib install/lib/
+
+# Rename .a files to .lib for Windows build
+pushd install/lib
+for f in *.a; do
+  mv -- "$f" "${f%.a}.lib"
+done
+popd
