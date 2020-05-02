@@ -14,9 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Install MSYS2
-      run: choco install msys2 --no-progress
+      run: rem choco install msys2 --no-progress
     - name: Checkout FFmpeg
       run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
+      env:
+        FFMPEG_TAG: ${{ FFMPEG_TAG }}
     - name: Build FFmpeg
       run: |
         call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
