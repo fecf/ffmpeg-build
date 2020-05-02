@@ -27,7 +27,8 @@ wget http://www.tortall.net/projects/yasm/releases/yasm-1.3.0-win64.exe -O /bin/
   --disable-avfilter \
   --disable-network \
   --disable-pixelutils \
-  --disable-thread \
+  --disable-pthreads \
+  --disable-w32threads \
   --disable-everything \
   --enable-decoder=bink \
   --enable-demuxer=bink \
