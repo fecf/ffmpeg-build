@@ -30,6 +30,7 @@ jobs:
       with:
         name: ffmpeg
         path: ffmpeg/install
+
   release:
     needs: build
     runs-on: ubuntu-latest
