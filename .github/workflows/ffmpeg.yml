@@ -43,8 +43,8 @@ jobs:
         uses: actions/download-artifact@master
         with:
           name: ffmpeg
-      - name: Zip
-        run: 7z a ffmpeg.zip ffmpeg/
+      - name: Archive
+        run: tar -cJf ffmpeg-win32-static.tar.xz ffmpeg/
       - name: Create Build Number
         id: buildnumber
         uses: einaregilsson/build-number@v1 
@@ -67,6 +67,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./ffmpeg.zip
-          asset_name: ffmpeg.zip
-          asset_content_type: application/zip
+          asset_path: ./ffmpeg-win32-static.tar.xz
+          asset_name: ffmpeg-win32-static.tar.xz
+          asset_content_type: application/x-gtar
