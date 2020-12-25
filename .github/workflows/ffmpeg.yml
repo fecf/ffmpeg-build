@@ -46,19 +46,14 @@ jobs:
           path: ffmpeg-bink
       - name: Archive
         run: tar -cJf ffmpeg-win32-static.tar.xz ffmpeg-bink/
-      - name: Create Build Number
-        id: buildnumber
-        uses: einaregilsson/build-number@v1 
-        with: 
-          token: ${{ secrets.GITHUB_TOKEN }}
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ffmpeg/build/${{ steps.buildnumber.outputs.build_number }}
-          release_name: ffmpeg-bink build ${{ steps.buildnumber.outputs.build_number }}
+          tag_name: ffmpeg/build/${{ github.run_number }}
+          release_name: ffmpeg-bink build ${{ github.run_number }}
           draft: false
           prerelease: false
       - name: Upload Release Asset
