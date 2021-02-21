@@ -11,32 +11,55 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  build-windows:
+    name: Build Windows (${{ matrix.arch }})
+    runs-on: windows-latest
     strategy:
       fail-fast: true
-    runs-on: windows-latest
+      matrix:
+        arch: [x64, arm64]
+        include:
+          - arch: x64
+            platform: x64
+            compiler_arch: x64
+          - arch: arm64
+            platform: ARM64
+            compiler_arch: arm64
     steps:
-    - uses: actions/checkout@v1
-    - name: Checkout FFmpeg
-      run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
-    - name: Install MSYS2
-      run: choco install msys2 --no-progress --params "/NoUpdate"
-    - name: Build FFmpeg
-      run: |
-        call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=amd64 -host_arch=amd64
-        set MSYS2_PATH_TYPE=inherit
-        C:\tools\msys64\usr\bin\bash -lc "./build.sh -b"
-      shell: cmd
-      env:
-        HOME: ${{ runner.workspace }}/ffmpeg-bink
-    - uses: actions/upload-artifact@v2
-      name: Upload Artifact
-      with:
-        name: ffmpeg
-        path: ffmpeg/install
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+          lfs: true
+      - name: Checkout FFmpeg
+        run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
+      - name: Install MSYS2
+        run: choco install msys2 --no-progress --params "/NoUpdate"
+      - name: Build FFmpeg
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=$COMPILER_ARCH -host_arch=amd64
+          set MSYS2_PATH_TYPE=inherit
+          C:\tools\msys64\usr\bin\bash -lc "./build.sh"
+        shell: cmd
+        env:
+          HOME: ${{ runner.workspace }}
+          ARCH: ${{ matrix.arch }}
+          COMPILER_ARCH: ${{ matrix.compiler_arch }}
+      - name: Build
+        run: |
+          cmake -B build -A $PLATFORM -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install .
+          # Ignore the exit-code of this command since building ffmpeg-bink is a shitshow due to ffmpeg and LTCG
+          cmake --build build --config Release --target ffmpeg-bink || true
+          cmake --build build --config Release -t install
+        shell: bash
+        env:
+          PLATFORM: ${{ matrix.platform }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: native_lib_windows_${{ matrix.arch }}
+          path: install
 
   release:
-    needs: build
+    needs: build-windows
     runs-on: ubuntu-latest
     steps:
       - name: Download Artifact

@@ -1,0 +1,17 @@
+LIBRARY
+
+EXPORTS
+    BinkPlayer_Create
+    BinkPlayer_Free
+    BinkPlayer_Open
+    BinkPlayer_Play
+    BinkPlayer_Stop
+    BinkPlayer_AtEnd
+    BinkPlayer_Error
+    BinkPlayer_HasVideo
+    BinkPlayer_Width
+    BinkPlayer_Height
+    BinkPlayer_HasAudio
+    BinkPlayer_AudioSampleRate
+    BinkPlayer_AudioChannels
+
