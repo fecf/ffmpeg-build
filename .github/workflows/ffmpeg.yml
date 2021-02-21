@@ -25,13 +25,11 @@ jobs:
           lfs: true
       - name: Checkout FFmpeg
         run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
-      - name: Install MSYS2
-        run: choco install msys2 --no-progress --params "/NoUpdate"
       - name: Build FFmpeg
         run: |
           call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\Common7\Tools\VsDevCmd.bat" -arch=%ARCH% -host_arch=amd64
           set MSYS2_PATH_TYPE=inherit
-          C:\tools\msys64\usr\bin\bash -lc "./build.sh"
+          C:\msys64\usr\bin\bash -lc "./build.sh %ARCH%"
         shell: cmd
         env:
           # This needs to be set so that the msys bash finds "./build.sh" (since it'll otherwise not start in CWD)
@@ -39,7 +37,7 @@ jobs:
           ARCH: ${{ matrix.arch }}
       - name: Build
         run: |
-          cmake -B build -A $ARCH -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install .
+          cmake -B build -A $ARCH -DRUNTIME_ID=win-$ARCH -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install .
           # Ignore the exit-code of this command since building ffmpeg-bink is a shitshow due to ffmpeg and LTCG
           cmake --build build --config Release --target ffmpeg-bink || true
           cmake --build build --config Release -t install
@@ -50,6 +48,60 @@ jobs:
         with:
           name: native_lib_windows_${{ matrix.arch }}
           path: install
+
+  build-linux:
+    name: Build Linux (${{ matrix.arch }})
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: true
+      matrix:
+        arch: [x64, arm64]
+    steps:
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update -qq && sudo apt-get -y install \
+            autoconf \
+            automake \
+            build-essential \
+            cmake \
+            git-core \
+            libass-dev \
+            libfreetype6-dev \
+            libgnutls28-dev \
+            libtool \
+            libvorbis-dev \
+            meson \
+            ninja-build \
+            pkg-config \
+            texinfo \
+            wget \
+            yasm \
+            zlib1g-dev
+      - uses: actions/checkout@v1
+        with:
+          submodules: recursive
+          lfs: true
+      - name: Checkout FFmpeg
+        run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
+      - name: Build FFmpeg
+        run: ./build.sh linux-$ARCH
+        shell: bash
+        env:
+          ARCH: ${{ matrix.arch }}
+      - name: Build
+        run: |
+          cmake -B build -A $ARCH -DRUNTIME_ID=linux-$ARCH -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install .
+          # Ignore the exit-code of this command since building ffmpeg-bink is a shitshow due to ffmpeg and LTCG
+          cmake --build build --config Release --target ffmpeg-bink || true
+          cmake --build build --config Release -t install
+        shell: bash
+        env:
+          ARCH: ${{ matrix.arch }}
+      - uses: actions/upload-artifact@v2
+        with:
+          name: native_lib_windows_${{ matrix.arch }}
+          path: install
+
 
   release:
     needs: build-windows
