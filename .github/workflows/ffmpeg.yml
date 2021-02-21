@@ -84,7 +84,7 @@ jobs:
       - name: Checkout FFmpeg
         run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
       - name: Build FFmpeg
-        run: ./build.sh linux-$ARCH
+        run: chmod u+x build.sh && ./build.sh linux-$ARCH
         shell: bash
         env:
           ARCH: ${{ matrix.arch }}
