@@ -5,29 +5,29 @@ cd FFmpeg
 
 if [ "$1" == "arm" ]; then
   echo "Compiling for ARM"
-  PLATFORM_FLAGS="--target-os=win32 --as=armasm --arch=arm --cpu=armv7  --enable-cross-compile --toolchain=msvc --extra-cflags=\"-MD -GL -D__ARM_PCS_VFP\" --extra-cxxflags=\"-MD -GL\" --extra-ldflags=\"-nodefaultlib:LIBCMT -LTCG\""
+  PLATFORM_FLAGS=(--target-os=win32 --as=armasm --arch=arm --cpu=armv7  --enable-cross-compile --toolchain=msvc --extra-cflags="-MD -GL -D__ARM_PCS_VFP" --extra-cxxflags="-MD -GL" --extra-ldflags="-nodefaultlib:LIBCMT -LTCG")
   PLATFORM=win
 elif [ "$1" == "arm64" ]; then
   echo "Compiling for ARM64"
-  PLATFORM_FLAGS="--target-os=win64 --as=armasm64 --arch=aarch64 --enable-cross-compile --toolchain=msvc --extra-cflags=\"-MD -GL\" --extra-cxxflags=\"-MD -GL\" --extra-ldflags=\"-nodefaultlib:LIBCMT -LTCG\""
+  PLATFORM_FLAGS=(--target-os=win64 --as=armasm64 --arch=aarch64 --enable-cross-compile --toolchain=msvc --extra-cflags="-MD -GL" --extra-cxxflags="-MD -GL" --extra-ldflags="-nodefaultlib:LIBCMT -LTCG")
   PLATFORM=win
 elif [ "$1" == "linux-arm64" ]; then
   echo "Compiling for Linux ARM64"
-  PLATFORM_FLAGS="--target-os=linux --arch=aarch64 --enable-cross-compile --cross-prefix=aarch64-linux-gnu-"
+  PLATFORM_FLAGS=(--target-os=linux --arch=aarch64 --enable-cross-compile --cross-prefix=aarch64-linux-gnu-)
   PLATFORM=linux
   sudo apt install -y binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 elif [ "$1" == "linux-x64" ]; then
   echo "Compiling for Linux x64"
-  PLATFORM_FLAGS="--target-os=linux --arch=x64 --enable-x86asm"
+  PLATFORM_FLAGS=(--target-os=linux --arch=x64 --enable-x86asm)
   PLATFORM=linux
   sudo apt install -y binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 elif [ "$1" == "x86" ]; then
   echo "Compiling for x86"
-  PLATFORM_FLAGS="--target-os=win32 --enable-x86asm --arch=i686 --cpu=x86 --toolchain=msvc --extra-cflags=\"-MD -GL\" --extra-cxxflags=\"-MD -GL\" --extra-ldflags=\"-nodefaultlib:LIBCMT -LTCG\""
+  PLATFORM_FLAGS=(--target-os=win32 --enable-x86asm --arch=i686 --cpu=x86 --toolchain=msvc --extra-cflags="-MD -GL" --extra-cxxflags="-MD -GL" --extra-ldflags="-nodefaultlib:LIBCMT -LTCG")
   PLATFORM=win
 elif [ "$1" == "x64" ]; then
   echo "Compiling for x64"
-  PLATFORM_FLAGS="--target-os=win64 --enable-x86asm --arch=amd64 --cpu=amd64 --toolchain=msvc --extra-cflags=\"-MD -GL\" --extra-cxxflags=\"-MD -GL\" --extra-ldflags=\"-nodefaultlib:LIBCMT -LTCG\""
+  PLATFORM_FLAGS=(--target-os=win64 --enable-x86asm --arch=amd64 --cpu=amd64 --toolchain=msvc --extra-cflags="-MD -GL" --extra-cxxflags="-MD -GL" --extra-ldflags="-nodefaultlib:LIBCMT -LTCG")
   PLATFORM=win
 else
   echo "Pass arch argument"
@@ -68,7 +68,7 @@ export PATH=$PATH:`pwd`
   --enable-decoder=binkaudio_dct \
   --enable-protocol=file \
   --enable-small \
-  $PLATFORM_FLAGS
+  "${PLATFORM_FLAGS[@]}"
 
 make
 make install
