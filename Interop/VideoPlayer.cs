@@ -60,7 +60,21 @@ namespace FfmpegBink.Interop
 
         public bool AtEnd => BinkPlayer_AtEnd(GetHandleSafe());
 
-        public string Error => BinkPlayer_Error(GetHandleSafe());
+        public string Error
+        {
+            get
+            {
+                var pointer = BinkPlayer_Error(GetHandleSafe());
+                if (pointer == IntPtr.Zero)
+                {
+                    return null;
+                }
+                else
+                {
+                    return Marshal.PtrToStringUTF8(pointer);
+                }
+            }
+        }
 
         public bool HasVideo => BinkPlayer_HasVideo(GetHandleSafe());
 
@@ -155,8 +169,7 @@ namespace FfmpegBink.Interop
         private static extern bool BinkPlayer_AtEnd(IntPtr player);
 
         [DllImport(DllPath)]
-        [return: MarshalAs(UnmanagedType.LPStr)]
-        private static extern string BinkPlayer_Error(IntPtr player);
+        private static extern IntPtr BinkPlayer_Error(IntPtr player);
 
         [DllImport(DllPath)]
         [return: MarshalAs(UnmanagedType.Bool)]

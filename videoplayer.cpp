@@ -202,7 +202,7 @@ VideoPlayer::VideoPlayer() noexcept {
   video->format_ctx = avformat_alloc_context();
 }
 
-VideoPlayer::~VideoPlayer() = default;
+VideoPlayer::~VideoPlayer() noexcept = default;
 
 bool VideoPlayer::open(const char* path) noexcept {
   video->path = path;

@@ -118,7 +118,7 @@ jobs:
       - name: Restore
         run: |
           cd Interop
-          dotnet restore managed
+          dotnet restore
       - name: Build and Pack
         run: |
           cd Interop
