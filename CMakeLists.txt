@@ -31,7 +31,7 @@ target_include_directories(ffmpeg-bink PRIVATE ${FFMPEG_DIR}include)
 set_target_properties(ffmpeg-bink PROPERTIES INTERPROCEDURAL_OPTIMIZATION ON)
 
 if (WIN32)
-    target_link_libraries(ffmpeg-bink PRIVATE libavcodec libavformat libavutil)
+    target_link_libraries(ffmpeg-bink PRIVATE libavcodec libavformat libavutil libswscale)
     target_link_libraries(ffmpeg-bink PRIVATE bcrypt.lib)
     install(FILES $<TARGET_PDB_FILE:ffmpeg-bink> DESTINATION runtimes/${RUNTIME_ID}/native)
 else ()

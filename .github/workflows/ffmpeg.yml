@@ -135,7 +135,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: nuget_package
-          path: Interop\bin\Release\*.nupkg
+          path: "Interop\bin\Any CPU\Release\*.nupkg"
 
   push-package:
     name: Push NuGet Package

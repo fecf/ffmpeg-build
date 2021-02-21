@@ -9,15 +9,11 @@ namespace FfmpegBink.Interop
 
     public class VideoPlayer : IDisposable
     {
-        private const int PlaneY = 0;
-        private const int PlaneU = 1;
-        private const int PlaneV = 2;
-
         private const string DllPath = "ffmpeg-bink.dll";
 
         private IntPtr _handle;
 
-        private unsafe delegate void NativeVideoFrameDelegate(double time, byte** planes, int* strides);
+        private unsafe delegate void NativeVideoFrameDelegate(double time, byte* pixelData, int size, int stride);
 
         private unsafe delegate void NativeAudioSamplesDelegate(float** planes, int sampleCount,
             [MarshalAs(UnmanagedType.Bool)]
@@ -88,27 +84,17 @@ namespace FfmpegBink.Interop
 
         public int AudioChannels => BinkPlayer_AudioChannels(GetHandleSafe());
 
-        private unsafe void OnNativeVideoFrame(double time, byte** planes, int* strides)
+        private unsafe void OnNativeVideoFrame(double time, byte* pixelData, int size, int stride)
         {
             var width = VideoWidth;
             var height = VideoHeight;
-
-            // Format is ALWAYS YUV420
-            var yPlaneSize = height * strides[PlaneY];
-            // U and V planes are sampled at half height, half width
-            var uPlaneSize = height / 2 * strides[PlaneU];
-            var vPlaneSize = height / 2 * strides[PlaneV];
 
             var frame = new VideoFrame(
                 time,
                 width,
                 height,
-                new ReadOnlySpan<byte>(planes[PlaneY], yPlaneSize),
-                new ReadOnlySpan<byte>(planes[PlaneU], uPlaneSize),
-                new ReadOnlySpan<byte>(planes[PlaneV], vPlaneSize),
-                strides[PlaneY],
-                strides[PlaneU],
-                strides[PlaneV]
+                new ReadOnlySpan<byte>(pixelData, size),
+                stride
             );
 
             OnVideoFrame?.Invoke(in frame);

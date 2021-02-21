@@ -55,7 +55,6 @@ export PATH=$PATH:`pwd`
   --disable-iconv \
   --disable-avdevice \
   --disable-swresample \
-  --disable-swscale \
   --disable-postproc \
   --disable-avfilter \
   --disable-network \
@@ -67,6 +66,7 @@ export PATH=$PATH:`pwd`
   --enable-demuxer=bink \
   --enable-decoder=binkaudio_dct \
   --enable-protocol=file \
+  --enable-mmx \
   --enable-small \
   "${PLATFORM_FLAGS[@]}"
 

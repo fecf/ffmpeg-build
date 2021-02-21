@@ -18,7 +18,7 @@ int BinkPlayer_Open(VideoPlayer *player, char *path) noexcept {
     return player->open(path) ? RESULT_TRUE : RESULT_FALSE;
 }
 
-using OnVideoFrame = void(double time, uint8_t **planes, const int *strides);
+using OnVideoFrame = void(double time, uint8_t *rgb32Data, int size, int stride);
 using OnAudioSamples = void(float *planes[], int sampleCount, bool interleaved);
 using OnStop = void();
 

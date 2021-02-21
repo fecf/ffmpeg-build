@@ -10,26 +10,23 @@ namespace FfmpegBink.Interop
 
         public int Height { get; }
 
-        public ReadOnlySpan<byte> YPlane { get; }
-        public ReadOnlySpan<byte> UPlane { get; }
-        public ReadOnlySpan<byte> VPlane { get; }
+        /// <summary>
+        /// Pixel data in RGB32 format
+        /// </summary>
+        public ReadOnlySpan<byte> PixelData { get; }
 
-        public int YStride { get; }
-        public int UStride { get; }
-        public int VStride { get; }
+        /// <summary>
+        /// Stride in byte for PixelData.
+        /// </summary>
+        public int Stride { get; }
 
-        public VideoFrame(double time, int width, int height, ReadOnlySpan<byte> yPlane, ReadOnlySpan<byte> uPlane,
-            ReadOnlySpan<byte> vPlane, int yStride, int uStride, int vStride)
+        public VideoFrame(double time, int width, int height, ReadOnlySpan<byte> pixelData, int stride)
         {
             Time = time;
             Width = width;
             Height = height;
-            YPlane = yPlane;
-            UPlane = uPlane;
-            VPlane = vPlane;
-            YStride = yStride;
-            UStride = uStride;
-            VStride = vStride;
+            PixelData = pixelData;
+            Stride = stride;
         }
     }
 }

@@ -11,8 +11,8 @@ enum class BinkColorSpace { Jpeg, Mpeg };
 
 class VideoPlayer {
  public:
-  // Format is ALWAYS YUV420
-  using OnVideoFrame = std::function<void(double time, uint8_t** planes, const int* strides)>;
+  // Format is ALWAYS RGBx
+  using OnVideoFrame = std::function<void(double time, uint8_t* pixelData, int size, int stride)>;
   using OnAudioSamples = std::function<void(float* planes[], int sampleCount, bool interleaved)>;
   using OnStop = std::function<void()>;
 
