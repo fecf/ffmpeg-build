@@ -12,8 +12,8 @@
     </PropertyGroup>
 
     <ItemGroup Condition="'$(NuGetFiles)' == '' And '$(Configuration)' == 'Debug'">
-        <None Include="..\..\cmake-build-debug\ffmpeg-bink.dll" Pack="true" Link="runtimes\win-x64\native\%(Filename)%(Extension)" PackagePath="runtimes\win-x64\native" CopyToOutputDirectory="PreserveNewest" />
-        <None Include="..\..\cmake-build-debug\ffmpeg-bink.pdb" Pack="true" Link="runtimes\win-x64\native\%(Filename)%(Extension)" PackagePath="runtimes\win-x64\native" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\cmake-build-debug\ffmpeg-bink.dll" Pack="true" Link="runtimes\win-x64\native\%(Filename)%(Extension)" PackagePath="runtimes\win-x64\native" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\cmake-build-debug\ffmpeg-bink.pdb" Pack="true" Link="runtimes\win-x64\native\%(Filename)%(Extension)" PackagePath="runtimes\win-x64\native" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
     <!--
@@ -26,6 +26,6 @@
 
     <Target Name="InstallLocal">
         <RemoveDir Directories="$(NuGetPackageRoot)$(PackageId)\$(PackageVersion)" ContinueOnError="true" />
-        <Exec Command="&quot;$(MSBuildThisFileDirectory)\..\..\tools-win\nuget&quot; init $(OutputPath)..\ $(NuGetPackageRoot) -Expand" />
+        <Exec Command="&quot;$(MSBuildThisFileDirectory)\..\tools-win\nuget&quot; init $(OutputPath)..\ $(NuGetPackageRoot) -Expand" />
     </Target>
 </Project>

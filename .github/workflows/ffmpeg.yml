@@ -116,9 +116,12 @@ jobs:
           name: native_lib_windows_arm64
           path: nuget_files
       - name: Restore
-        run: dotnet restore managed
+        run: |
+          cd Interop
+          dotnet restore managed
       - name: Build and Pack
         run: |
+          cd Interop
           dotnet msbuild -t:Clean,Build,Pack \
                          -p:Configuration=Release \
                          -p:Platform="Any CPU" \
@@ -127,13 +130,12 @@ jobs:
                          -p:RepositoryType=git \
                          -p:RepositoryBranch=${GITHUB_REF} \
                          -p:RepositoryCommit=${GITHUB_SHA} \
-                         -p:VersionSuffix=pre.${{ github.run_number }} \
-                         managed
+                         -p:VersionSuffix=pre.${{ github.run_number }}
         shell: bash
       - uses: actions/upload-artifact@v2
         with:
           name: nuget_package
-          path: managed\Interop\bin\Release\*.nupkg
+          path: Interop\bin\Release\*.nupkg
 
   push-package:
     name: Push NuGet Package
