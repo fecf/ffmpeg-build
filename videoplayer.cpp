@@ -11,6 +11,7 @@ extern "C" {
 #include <mutex>
 #include <thread>
 #include <utility>
+#include <condition_variable>
 #include "videoplayer.h"
 
 struct StreamContext {

@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+
+        <AssemblyName>FfmpegBink.Interop</AssemblyName>
+        <RootNamespace>FfmpegBink.Interop</RootNamespace>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+        <PackageId>FfmpegBink.Interop</PackageId>
+        <VersionPrefix>1.0.0</VersionPrefix>
+        <IncludeSymbols>true</IncludeSymbols>
+    </PropertyGroup>
+
+    <ItemGroup Condition="'$(NuGetFiles)' == '' And '$(Configuration)' == 'Debug'">
+        <None Include="..\..\cmake-build-debug\ffmpeg-bink.dll" Pack="true" Link="runtimes\win-x64\native\%(Filename)%(Extension)" PackagePath="runtimes\win-x64\native" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="..\..\cmake-build-debug\ffmpeg-bink.pdb" Pack="true" Link="runtimes\win-x64\native\%(Filename)%(Extension)" PackagePath="runtimes\win-x64\native" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <!--
+        This can be set via -p:NuGetFiles=cmake-build-debug\nuget_files from the commandline for example.
+        MSBuildStartupDirectory makes it relative to from where msbuild was called.
+    -->
+    <ItemGroup Condition="'$(NuGetFiles)' != ''">
+        <None Include="$(MSBuildStartupDirectory)\$(NuGetFiles)\**\*.*" PackagePath="" Pack="true" />
+    </ItemGroup>
+
+    <Target Name="InstallLocal">
+        <RemoveDir Directories="$(NuGetPackageRoot)$(PackageId)\$(PackageVersion)" ContinueOnError="true" />
+        <Exec Command="&quot;$(MSBuildThisFileDirectory)\..\..\tools-win\nuget&quot; init $(OutputPath)..\ $(NuGetPackageRoot) -Expand" />
+    </Target>
+</Project>

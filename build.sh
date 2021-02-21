@@ -13,7 +13,7 @@ elif [ "$1" == "arm64" ]; then
   PLATFORM=win
 elif [ "$1" == "linux-arm64" ]; then
   echo "Compiling for Linux ARM64"
-  PLATFORM_FLAGS=(--target-os=linux --arch=aarch64 --enable-cross-compile --cross-prefix=aarch64-linux-gnu-)
+  PLATFORM_FLAGS=(--target-os=linux --arch=aarch64 --enable-cross-compile --cross-prefix=aarch64-linux-gnu- --enable-pic --extra-cflags="-flto")
   PLATFORM=linux
   sudo apt install -y binutils-aarch64-linux-gnu gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 elif [ "$1" == "linux-x64" ]; then

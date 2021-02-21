@@ -48,89 +48,107 @@ jobs:
         with:
           name: native_lib_windows_${{ matrix.arch }}
           path: install
+#
+#  build-linux:
+#    name: Build Linux (${{ matrix.arch }})
+#    runs-on: ubuntu-20.04
+#    strategy:
+#      fail-fast: true
+#      matrix:
+#        arch: [x64, arm64]
+#    steps:
+#      - name: Install Dependencies
+#        run: |
+#          sudo apt-get update -qq && sudo apt-get -y install \
+#            autoconf \
+#            automake \
+#            build-essential \
+#            cmake \
+#            git-core \
+#            libass-dev \
+#            libfreetype6-dev \
+#            libgnutls28-dev \
+#            libtool \
+#            libvorbis-dev \
+#            meson \
+#            ninja-build \
+#            pkg-config \
+#            texinfo \
+#            wget \
+#            yasm \
+#            zlib1g-dev
+#      - uses: actions/checkout@v1
+#        with:
+#          submodules: recursive
+#          lfs: true
+#      - name: Checkout FFmpeg
+#        run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
+#      - name: Build FFmpeg
+#        run: chmod u+x build.sh && ./build.sh linux-$ARCH
+#        shell: bash
+#        env:
+#          ARCH: ${{ matrix.arch }}
+#      - name: Build
+#        run: |
+#          cmake -B build -DCMAKE_TOOLCHAIN_FILE=linux-$ARCH.cmake -DRUNTIME_ID=linux-$ARCH -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install .
+#          cmake --build build --config Release --target ffmpeg-bink
+#          cmake --build build --config Release -t install
+#        shell: bash
+#        env:
+#          ARCH: ${{ matrix.arch }}
+#      - uses: actions/upload-artifact@v2
+#        with:
+#          name: native_lib_windows_${{ matrix.arch }}
+#          path: install
 
-  build-linux:
-    name: Build Linux (${{ matrix.arch }})
-    runs-on: ubuntu-20.04
-    strategy:
-      fail-fast: true
-      matrix:
-        arch: [x64, arm64]
+  build-nuget-package:
+    name: Build Managed NuGet Package
+    needs: [build-windows]
+    runs-on: windows-latest
     steps:
-      - name: Install Dependencies
-        run: |
-          sudo apt-get update -qq && sudo apt-get -y install \
-            autoconf \
-            automake \
-            build-essential \
-            cmake \
-            git-core \
-            libass-dev \
-            libfreetype6-dev \
-            libgnutls28-dev \
-            libtool \
-            libvorbis-dev \
-            meson \
-            ninja-build \
-            pkg-config \
-            texinfo \
-            wget \
-            yasm \
-            zlib1g-dev
       - uses: actions/checkout@v1
+      - uses: actions/download-artifact@v2
         with:
-          submodules: recursive
-          lfs: true
-      - name: Checkout FFmpeg
-        run: git clone https://github.com/FFmpeg/FFmpeg --branch ${FFMPEG_TAG} --depth 1
-      - name: Build FFmpeg
-        run: chmod u+x build.sh && ./build.sh linux-$ARCH
-        shell: bash
-        env:
-          ARCH: ${{ matrix.arch }}
-      - name: Build
+          name: native_lib_windows_x64
+          path: nuget_files
+      - uses: actions/download-artifact@v2
+        with:
+          name: native_lib_windows_arm64
+          path: nuget_files
+      - name: Restore
+        run: dotnet restore managed
+      - name: Build and Pack
         run: |
-          cmake -B build -A $ARCH -DRUNTIME_ID=linux-$ARCH -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install .
-          # Ignore the exit-code of this command since building ffmpeg-bink is a shitshow due to ffmpeg and LTCG
-          cmake --build build --config Release --target ffmpeg-bink || true
-          cmake --build build --config Release -t install
+          dotnet msbuild -t:Clean,Build,Pack \
+                         -p:Configuration=Release \
+                         -p:Platform="Any CPU" \
+                         -p:NuGetFiles=nuget_files \
+                         -p:RepositoryUrl=${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}.git \
+                         -p:RepositoryType=git \
+                         -p:RepositoryBranch=${GITHUB_REF} \
+                         -p:RepositoryCommit=${GITHUB_SHA} \
+                         -p:VersionSuffix=pre.${{ github.run_number }} \
+                         managed
         shell: bash
-        env:
-          ARCH: ${{ matrix.arch }}
       - uses: actions/upload-artifact@v2
         with:
-          name: native_lib_windows_${{ matrix.arch }}
-          path: install
+          name: nuget_package
+          path: managed\Interop\bin\Release\*.nupkg
 
-
-  release:
-    needs: build-windows
-    runs-on: ubuntu-latest
+  push-package:
+    name: Push NuGet Package
+    needs: [build-nuget-package]
+    runs-on: windows-latest
     steps:
-      - name: Download Artifact
-        uses: actions/download-artifact@v2
+      - uses: actions/checkout@v1
+      - uses: actions/download-artifact@v2
         with:
-          name: ffmpeg
-          path: ffmpeg-bink
-      - name: Archive
-        run: tar -cJf ffmpeg-win32-static.tar.xz ffmpeg-bink/
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
+          name: nuget_package
+          path: packages
+      - name: Install sleet
+        run: dotnet tool install -g sleet
+      - name: Upload Package
+        run: sleet push packages
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ffmpeg/build/${{ github.run_number }}
-          release_name: ffmpeg-bink build ${{ github.run_number }}
-          draft: false
-          prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset 
-        uses: actions/upload-release-asset@v1.0.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./ffmpeg-win32-static.tar.xz
-          asset_name: ffmpeg-win32-static.tar.xz
-          asset_content_type: application/x-gtar
+          AWS_ACCESS_KEY_ID: ${{ secrets.OPENTEMPLE_AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.OPENTEMPLE_AWS_SECRET_ACCESS_KEY }}
