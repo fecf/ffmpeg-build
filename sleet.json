@@ -1,0 +1,11 @@
+{
+  "sources": [
+    {
+      "name": "feed",
+      "type": "s3",
+      "path": "https://nuget.opentemple.de/",
+      "bucketName": "nuget.opentemple.de",
+      "region": "eu-north-1"
+    }
+  ]
+}
